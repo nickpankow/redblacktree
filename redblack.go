@@ -4,6 +4,11 @@ import (
 	"fmt"
 )
 
+const (
+	Red = 	true
+	Black = false
+)
+
 type RedBlackTree struct {
 	Root 		*RedBlackNode
 }
@@ -25,9 +30,11 @@ func (rb *RedBlackTree) Insert(element *RedBlackNode) {
 	fmt.Println("Insert ", element)
 	if rb.Root == nil {
 		rb.Root = element
+		// Root is always black
+		rb.Root.SetBlack()
 	} else {
-		return
-	}
+	 	return
+	} 
 }
 
 // func tranverse(start *RedBlackNode, value int) (*RedBlackNode) {
@@ -94,8 +101,33 @@ func (rb RedBlackTree) Delete(element int) (*RedBlackNode) {
 }
 
 func (rb RedBlackTree) Find(value int) (*RedBlackNode){
-	fmt.Println("Find: ", value)
-	return nil
+	// fmt.Println("Find: ", value)
+	return recursiveFind(rb.Root, value)
+}
+
+func recursiveFind(node *RedBlackNode, value int) (*RedBlackNode){
+	// If matches current node, we have a match
+	if node.Value == value {
+		return node
+	}
+
+	var retNode *RedBlackNode
+	// Search the left side of the tree
+	if value < node.Value && node.left != nil {
+		retNode = recursiveFind(node.left, value)
+		if retNode != nil{
+			// Return if found
+			return retNode
+		}
+	}
+
+	// Search the right side of the tree
+	if value > node.Value && node.right != nil{
+		retNode = recursiveFind(node.right, value)
+	}
+
+	// Return result from right side of the search; nil or node.
+	return retNode
 }
 
 /** Node Child Methods **/
@@ -108,4 +140,12 @@ func (rbn *RedBlackNode) SetLeftChild(x *RedBlackNode) {
 func (rbn *RedBlackNode) SetRightChild(x *RedBlackNode) {
 	rbn.right = x
 	x.parent = rbn
+}
+
+func (rbn *RedBlackNode) SetRed() {
+	rbn.redblack = Red
+}
+
+func (rbn *RedBlackNode) SetBlack() {
+	rbn.redblack = Black
 }

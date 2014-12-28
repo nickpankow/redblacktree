@@ -2,6 +2,7 @@ package redblack
 
 import (
 	"testing"
+	"fmt"
 )
 
 func TestNewTree(t *testing.T) {
@@ -22,15 +23,47 @@ func TestInsert(t *testing.T) {
 	if rbTree.Root == nil || rbTree.Root.Value != 50 {
 		t.Error("Root node value mismatch.  Root: ", rbTree.Root)
 	}
-	// t.Error("Insert not implemented")
+	t.Error("Insert not implemented")
 }
 
 func TestDelete(t *testing.T) {
 	t.Error("Delete not implemented")
 }
 
+func createNodeWithValue(value int) (*RedBlackNode){
+	return &RedBlackNode{ value, 
+						  fmt.Sprintf("%d", value),
+						  false, nil, nil, nil}
+}
+
 func TestFind(t *testing.T) {
-	t.Error("Find not implemented")
+	tree := NewTree()
+	// var tmpNode RedBlackNode
+	tree.Root = &RedBlackNode{}; tree.Root.Value = 50
+	tree.Root.left = createNodeWithValue(25)
+	tree.Root.left.left = createNodeWithValue(12)
+	tree.Root.left.right = createNodeWithValue(37)
+	tree.Root.right = createNodeWithValue(75)
+	tree.Root.right.left = createNodeWithValue(62)
+	tree.Root.right.right = createNodeWithValue(87)
+
+	if tree.Root.right.right.Value != 87 || tree.Root.left.left.Value != 12 {
+		t.Error("Tree setup does not match expected.")
+	}
+
+	for _, v := range []int{87,62,75,37,12,25} {
+		x := tree.Find(v)
+		if x == nil {
+			t.Error("Find failed to find expected node: ", v)
+		}
+	}
+
+	for _, w := range []int{1,20,55,69,88,100} {
+		y := tree.Find(w)
+		if y != nil {
+			t.Error("Find erroneously found node: ", w)
+		}
+	}
 }
 
 func TestRotateLeft(t *testing.T) {
