@@ -33,17 +33,26 @@ func (rb *RedBlackTree) Insert(element *RedBlackNode) {
 		// Root is always black
 		rb.Root.SetBlack()
 	} else {
+		// Start by inserting node as you would as binary search tree and color it red
+		recursiveInsert(&rb.Root, element, nil)
 	 	return
 	} 
 }
 
-// func tranverse(start *RedBlackNode, value int) (*RedBlackNode) {
-// 	if start.Value > value {
+func recursiveInsert(n **RedBlackNode, i *RedBlackNode, p *RedBlackNode) {
+	if *n == nil {
+		*n = i
+		(*n).parent = p
+		(*n).SetRed()
+	} else if i.Value < (*n).Value {
+		fmt.Println("Insert Left")
+		recursiveInsert(&((*n).left), i, *n)
+	} else {
+		fmt.Println("Insert Right")
+		recursiveInsert(&((*n).right), i, *n)
+	}
+}
 
-// 	} else {
-
-// 	}
-// }
 
 func leftRotate(t *RedBlackTree, x *RedBlackNode) {
 	var y *RedBlackNode
@@ -130,6 +139,24 @@ func recursiveFind(node *RedBlackNode, value int) (*RedBlackNode){
 	return retNode
 }
 
+func (rb *RedBlackTree) Height() int {
+	return height(rb.Root, 0)
+}
+
+func height(n *RedBlackNode, h int) int {
+	fmt.Println("Node: ", n)
+	if n == nil {
+		return 0
+	}
+	l := height(n.left, h + 1)
+	r := height(n.right, h + 1)
+	if l > r {
+		return l
+	} else {
+		return r
+	}
+}
+
 /** Node Child Methods **/
 
 func (rbn *RedBlackNode) SetLeftChild(x *RedBlackNode) {
@@ -142,10 +169,24 @@ func (rbn *RedBlackNode) SetRightChild(x *RedBlackNode) {
 	x.parent = rbn
 }
 
+// func (rbn *RedBlackNode) Left() (l *RedBlackNode) {
+// 	return rbn.left
+// }
+
+// func (rbn *RedBlackNode) Right() {} 
+
+/** Node Methods **/
+
 func (rbn *RedBlackNode) SetRed() {
 	rbn.redblack = Red
 }
 
 func (rbn *RedBlackNode) SetBlack() {
 	rbn.redblack = Black
+}
+
+/** Utility **/
+
+func (rbn *RedBlackTree) String() {
+
 }

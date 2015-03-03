@@ -23,7 +23,18 @@ func TestInsert(t *testing.T) {
 	if rbTree.Root == nil || rbTree.Root.Value != 50 {
 		t.Error("Root node value mismatch.  Root: ", rbTree.Root)
 	}
-	t.Error("Insert not implemented")
+
+	rbNode = RedBlackNode{}
+	rbNode.Value = 25
+	rbTree.Insert(&rbNode)
+	if rbTree.Root.left != &rbNode || rbTree.Root.left.Value != 25{
+		if rbTree.Root.left == nil {
+			t.Error("Insert value mismatch.  No node found")
+		} else {
+			t.Error("Insert value mismatch.  Expected 25, found: ", rbTree.Root.left.Value)
+		}
+	}
+	// t.Error("Insert not implemented")
 }
 
 func TestDelete(t *testing.T) {
@@ -135,5 +146,28 @@ func TestRotateRight(t *testing.T) {
 	rightRotate(tree, y)
 	if tree.Root != z || x.left != a || x.right != y || y.left != b || y.right != c {
 		t.Error("Incorrect Right-Rotate result")
+	}
+}
+
+func TestHeight(t *testing.T) {
+	rbt := NewTree()
+	// d := &RedBlackNode{ 0, "D", false, nil, nil, nil}
+	// e := &RedBlackNode{ 1, "E", false, nil, nil, nil}
+	a := &RedBlackNode{3, "A", false, nil, nil, nil}
+	b := &RedBlackNode{4, "B", false, nil, nil, nil}
+	// c := &RedBlackNode{2, "C", false, nil, nil, nil}
+
+	if h := rbt.Height(); h != 0 {
+		t.Error("Incorrect height.  Height should be 0, but is ", h)
+	}
+
+	rbt.Insert(a)
+	if h := rbt.Height(); h != 1 {
+		t.Error("Incorrect height.  Height should be 1, but is ", h)
+	}
+
+	rbt.Insert(b)
+	if h := rbt.Height(); h != 2 {
+		t.Error("Incorrect height.  Height should be 2, but is ", h)
 	}
 }
