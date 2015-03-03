@@ -4,189 +4,80 @@ import (
 	"fmt"
 )
 
+// Represents the color of a RedBlackTree node.  A node can be either Red or Black.
 const (
 	Red = 	true
 	Black = false
 )
 
 type RedBlackTree struct {
-	Root 		*RedBlackNode
-}
-
-type RedBlackNode struct {
 	Value 		int
 	Data 		interface{}
-	redblack	bool
-	parent		*RedBlackNode
-	left		*RedBlackNode
-	right		*RedBlackNode
+	color		bool
+	parent		*RedBlackTree
+	left		*RedBlackTree
+	right		*RedBlackTree
 }
 
-func NewTree() (*RedBlackTree){
-	return new(RedBlackTree)
+
+/** Data Structure Basics **/
+
+func NewRedBlackTree(value int, data interface{}) (*RedBlackTree){
+	rbt := new(RedBlackTree)
+	rbt.Value = value
+	rbt.Data = data
+	return rbt
 }
 
-func (rb *RedBlackTree) Insert(element *RedBlackNode) {
-	fmt.Println("Insert ", element)
-	if rb.Root == nil {
-		rb.Root = element
-		// Root is always black
-		rb.Root.SetBlack()
+// Sets the current nodes color to Red.
+func (rbt *RedBlackTree) SetRed() {
+	rbt.color = Red
+}
+
+// Sets the current nodes color to Black.
+func (rbt *RedBlackTree) SetBlack() {
+	rbt.color = Black
+}
+
+// Returns the left child of the current node.
+func (rbt *RedBlackTree) GetLeftChild() (*RedBlackTree) {
+	return rbt.left
+}
+
+// Returns the right chid of the current node.
+func (rbt *RedBlackTree) GetRightChild() (*RedBlackTree) {
+	return rbt.right
+}
+
+// Returns the parent of the current node.
+func (rbt *RedBlackTree) GetParent() (*RedBlackTree) {
+	return rbt.parent
+}
+
+// Sets the item as the left child of the current RedBlackTree object
+// Also sets teh current RedBlackTree object as teh given childs parent
+func (rbt *RedBlackTree) SetLeftChild(child *RedBlackTree) {
+	rbt.left = child
+	child.parent = rbt
+}
+
+// Sets the item as the right child of current RedBlackTree object
+// Also sets the current RedBlackTree object as the given childs parent
+func (rbt *RedBlackTree) SetRightChild(child *RedBlackTree) {
+	rbt.right = child
+	child.parent = rbt
+}
+
+// Returns a textual representation of a given color.
+func (rbt *RedBlackTree) GetColorString() string{
+	if rbt.color == Red{
+		return "Red"
 	} else {
-		// Start by inserting node as you would as binary search tree and color it red
-		recursiveInsert(&rb.Root, element, nil)
-	 	return
-	} 
-}
-
-func recursiveInsert(n **RedBlackNode, i *RedBlackNode, p *RedBlackNode) {
-	if *n == nil {
-		*n = i
-		(*n).parent = p
-		(*n).SetRed()
-	} else if i.Value < (*n).Value {
-		fmt.Println("Insert Left")
-		recursiveInsert(&((*n).left), i, *n)
-	} else {
-		fmt.Println("Insert Right")
-		recursiveInsert(&((*n).right), i, *n)
+		return "Black"
 	}
 }
 
-
-func leftRotate(t *RedBlackTree, x *RedBlackNode) {
-	var y *RedBlackNode
-	y = x.right
-	// Turn y's left sub-tree into x's right sub-tree
-	x.right = y.left
-	if y.left != nil {
-		y.left.parent = x
-	}
-	// y's new parent was x's parent
-	y.parent = x.parent
-	// Set parent to point to y instead of x
-	
-	// First see whether we're at the root
-	if x.parent == nil {
-		t.Root = y
-	} else {
-		if (x == x.parent.left) {
-			// x was on the left of its parent
-			x.parent.left = y
-		} else {
-			// x must have been on the right
-			x.parent.right = y
-		}
-	}
-	// Finally, put x on y's left
-	y.SetLeftChild(x)
-}
-
-func rightRotate(t *RedBlackTree, y *RedBlackNode) {
-	var x *RedBlackNode
-	x = y.left
-
-	y.left = x.right
-	if x.right != nil {
-		x.right.parent = y
-	}
-
-	x.parent = y.parent
-	if y.parent == nil {
-		t.Root = x
-	} else {
-		if (y == y.parent.right) {
-			y.parent.right = x
-		} else {
-			y.parent.left = x
-		}
-	}
-	x.SetRightChild(y)
-}
-
-func (rb RedBlackTree) Delete(element int) (*RedBlackNode) {
-	fmt.Println("Delete ", element)
-	return nil
-}
-
-func (rb RedBlackTree) Find(value int) (*RedBlackNode){
-	// fmt.Println("Find: ", value)
-	return recursiveFind(rb.Root, value)
-}
-
-func recursiveFind(node *RedBlackNode, value int) (*RedBlackNode){
-	// If matches current node, we have a match
-	if node.Value == value {
-		return node
-	}
-
-	var retNode *RedBlackNode
-	// Search the left side of the tree
-	if value < node.Value && node.left != nil {
-		retNode = recursiveFind(node.left, value)
-		if retNode != nil{
-			// Return if found
-			return retNode
-		}
-	}
-
-	// Search the right side of the tree
-	if value > node.Value && node.right != nil{
-		retNode = recursiveFind(node.right, value)
-	}
-
-	// Return result from right side of the search; nil or node.
-	return retNode
-}
-
-func (rb *RedBlackTree) Height() int {
-	return height(rb.Root, 0)
-}
-
-func height(n *RedBlackNode, h int) int {
-	fmt.Println("Node: ", n)
-	if n == nil {
-		return 0
-	}
-	l := height(n.left, h + 1)
-	r := height(n.right, h + 1)
-	if l > r {
-		return l
-	} else {
-		return r
-	}
-}
-
-/** Node Child Methods **/
-
-func (rbn *RedBlackNode) SetLeftChild(x *RedBlackNode) {
-	rbn.left = x
-	x.parent = rbn
-}
-
-func (rbn *RedBlackNode) SetRightChild(x *RedBlackNode) {
-	rbn.right = x
-	x.parent = rbn
-}
-
-// func (rbn *RedBlackNode) Left() (l *RedBlackNode) {
-// 	return rbn.left
-// }
-
-// func (rbn *RedBlackNode) Right() {} 
-
-/** Node Methods **/
-
-func (rbn *RedBlackNode) SetRed() {
-	rbn.redblack = Red
-}
-
-func (rbn *RedBlackNode) SetBlack() {
-	rbn.redblack = Black
-}
-
-/** Utility **/
-
-func (rbn *RedBlackTree) String() {
-
+// 
+func (rbt *RedBlackTree) String() string{
+	return fmt.Sprintf("%d", rbt.Value)
 }
